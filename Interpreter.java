@@ -81,7 +81,80 @@ public class Interpreter {
         System.out.println(evaluateExpression(varName));
     }
 
+    private int handleIf(int currentLine) {
+        String ifLine = code.get(currentLine);
+        //   System.out.println(ifLine);
+        //    System.out.println(ifLine);
+        //     System.out.println(ifLine);
+        String condition = ifLine.substring(ifLine.indexOf("if") + 2, ifLine.indexOf("{")).trim();
+        //      System.out.println(condition);
+        int startLine = currentLine + 1;
+        int endLine = findMatchingBrace(startLine);
+        //        System.out.println(code.get(endLine-2));
+        //        System.out.println(startLine +" and we end at" + endLine);
+        //    System.out.println(ifLine);
+        //  System.out.println(evaluateCondition(condition));
+        boolean is_break=false;
+        if (evaluateCondition(condition)) {
+            for (int i = startLine; i < endLine; i++) {
+                //    System.out.println(code.get(i).trim());
+                //  System.out.println(code.get(i).trim());
+                if (code.get(i).trim().equals("break")) {   is_break=true; break;   }
+                handleStatement(code.get(i).trim());
+            }
+        }
+        if (is_break)  { return -1; }
+        return endLine + 1;
+    }
 
+    private void handleFor() {
+        String forLine = code.get(currentLine);
+        String[] parts = forLine.substring(forLine.indexOf("for") + 3, forLine.indexOf("{")).trim().split(";");
+        // Initialize
+        String initPart = parts[0].trim();
+        String[] initParts = initPart.split(":=");
+        String iterVar = initParts[0].trim();
+        variables.put(iterVar, evaluateExpression(initParts[1].trim()));
+        // Condition and increment
+        String condition = parts[1].trim();
+        int startLine = currentLine + 1;
+        int endLine = findMatchingBrace(startLine);
+        //  System.out.println(code.get(endLine-3));
+        while (evaluateCondition(condition)) {
+            boolean is_break=false;
+            //    System.out.println(variables.get("isPrime"));
+            for (int i = startLine; i < endLine; i++) {
+                if (code.get(i)=="") { continue; }
+                //  System.out.println(code.get(i));
+                if (code.get(i).trim().equals("break")) { is_break=true; break ;}
+                //     System.out.println(code.get(i));
+                if (code.get(i).trim().startsWith("if")) {
+                    //  System.out.println(code.get(i));
+                    //                    int helper = handleIf(i);
+                    // System.out.println(helper);
+                    if (helper==-1) { is_break=true; break;  }
+                    i=helper-1;
+                    continue;
+                }
+                //      System.out.println(code.get(i));
+                handleStatement(code.get(i).trim());
+            }
+            if (is_break) { break; }
+            // Handle increment
+            variables.put(iterVar, variables.get(iterVar) + 1);
+        }
+        currentLine = endLine + 1;
+    }
+
+    private int findMatchingBrace(int start) {
+        int count = 1;
+        for (int i = start; i < code.size(); i++) {
+            if (code.get(i).contains("{")) count++;
+            if (code.get(i).contains("}")) count--;
+            if (count == 0) return i;
+        }
+        return code.size();
+    }
 
     public static void main(String[] args) {
 
