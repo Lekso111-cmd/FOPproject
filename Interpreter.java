@@ -81,6 +81,7 @@ public class Interpreter {
         System.out.println(evaluateExpression(varName));
     }
 
+    //Avtandil Ananidze:
     private int handleIf(int currentLine) {
         String ifLine = code.get(currentLine);
         //   System.out.println(ifLine);
