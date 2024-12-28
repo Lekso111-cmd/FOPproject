@@ -211,6 +211,18 @@ public class Interpreter {
     }
 
     public static void main(String[] args) {
-
+        Interpreter interpreter = new Interpreter();
+        String program = """ 
+            num := 789
+            reversed := 0
+            for i := 0; num != 0; i++ {
+                digit := num % 10
+                reversed := reversed * 10
+                reversed := reversed + digit
+                num := num / 10
+            }
+            Println(reversed)
+        """;
+        interpreter.eval(program);
     }
 }
