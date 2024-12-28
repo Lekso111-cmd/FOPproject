@@ -156,6 +156,59 @@ public class Interpreter {
         }
         return code.size();
     }
+    private int evaluateExpression(String expr) {
+        expr = expr.trim();
+        if (expr.contains("*")) {
+            String[] parts = expr.split("\\*");
+            return evaluateExpression(parts[0]) * evaluateExpression(parts[1]);
+        }
+        if (expr.contains("/")) {
+            String[] parts = expr.split("/");
+            return evaluateExpression(parts[0]) / evaluateExpression(parts[1]);
+        }
+        if (expr.contains("%")) {
+            String[] parts = expr.split("%");
+            return evaluateExpression(parts[0]) % evaluateExpression(parts[1]);
+        }
+        if (expr.contains("+")) {
+            String[] parts = expr.split("\\+");
+            return evaluateExpression(parts[0]) + evaluateExpression(parts[1]);
+        }
+        try {
+            return Integer.parseInt(expr);
+        } catch (NumberFormatException e) {
+            return variables.getOrDefault(expr, 0);
+        }
+    }
+
+    private boolean evaluateCondition(String condition) {
+        condition = condition.trim();
+        if (condition.contains("<=")) {
+            String[] parts = condition.split("<=");
+            return evaluateExpression(parts[0]) <= evaluateExpression(parts[1]);
+        }
+        if (condition.contains(">=")) {
+            String[] parts = condition.split(">=");
+            return evaluateExpression(parts[0]) >= evaluateExpression(parts[1]);
+        }
+        if (condition.contains("!=")) {
+            String[] parts = condition.split("!=");
+            return evaluateExpression(parts[0]) != evaluateExpression(parts[1]);
+        }
+        if (condition.contains("==")) {
+            String[] parts = condition.split("==");
+            return evaluateExpression(parts[0]) == evaluateExpression(parts[1]);
+        }
+        if (condition.contains(">")) {
+            String[] parts = condition.split(">");
+            return evaluateExpression(parts[0]) > evaluateExpression(parts[1]);
+        }
+        if (condition.contains("<")) {
+            String[] parts = condition.split("<");
+            return evaluateExpression(parts[0]) < evaluateExpression(parts[1]);
+        }
+        return false;
+    }
 
     public static void main(String[] args) {
 
